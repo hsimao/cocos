@@ -12,7 +12,11 @@ cc.Class({
     jumpHeight: 0,
     jumpDuration: 0,
     maxMoveSpeed: 0,
-    accel: 0
+    accel: 0,
+    jumpAudio: {
+      default: null,
+      type: cc.AudioClip
+    }
   },
 
   onKeyDown(event) {
@@ -52,14 +56,19 @@ cc.Class({
       .tween()
       .by(this.jumpDuration, { y: -this.jumpHeight }, { easing: "sineIn" });
 
+    const callback = cc.callFunc(this.playJumpSound, this);
     // 创建一个缓动
     var tween = cc
       .tween()
       // 按 jumpUp，jumpDown 的顺序执行动作
-      .sequence(jumpUp, jumpDown);
+      .sequence(jumpUp, jumpDown, callback);
 
     // 不断重复
     return cc.tween().repeatForever(tween);
+  },
+
+  playJumpSound: function () {
+    cc.audioEngine.playEffect(this.jumpAudio, false);
   },
 
   // LIFE-CYCLE

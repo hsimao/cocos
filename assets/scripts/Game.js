@@ -26,6 +26,10 @@ cc.Class({
     scoreDisplay: {
       default: null,
       type: cc.Label
+    },
+    scoreAudio: {
+      default: null,
+      type: cc.AudioClip
     }
   },
   // LIFE-CYCLE CALLBACKS:
@@ -77,6 +81,7 @@ cc.Class({
   gainScore: function () {
     this.score++;
     this.scoreDisplay.string = `Score: ${this.score}`;
+    cc.audioEngine.playEffect(this.scoreAudio, false);
   },
 
   gameOver: function () {
