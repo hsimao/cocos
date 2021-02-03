@@ -22,20 +22,35 @@ cc.Class({
     player: {
       default: null,
       type: cc.Node
+    },
+    scoreDisplay: {
+      default: null,
+      type: cc.Label
     }
   },
   // LIFE-CYCLE CALLBACKS:
   onLoad: function () {
     this.groundY = this.ground.y + this.ground.height / 2;
+
+    this.timer = 0;
+    this.starDuration = 0;
+
     this.spawnNewStar();
+    this.score = 0;
   },
 
   spawnNewStar: function () {
-    let newStar = cc.instantiate(this.starPrefab);
+    const newStar = cc.instantiate(this.starPrefab);
     this.node.addChild(newStar);
     newStar.setPosition(this.getNewStarPosition());
 
     newStar.getComponent("Star").game = this;
+
+    // 重置计时器，根据消失时间范围随机取一个值
+    this.starDuration =
+      this.minStarDuration +
+      Math.random() * (this.maxStarDuration - this.minStarDuration);
+    this.timer = 0;
   },
 
   getNewStarPosition: function () {
@@ -51,9 +66,21 @@ cc.Class({
     return cc.v2(randX, randY);
   },
 
-  // onLoad () {},
+  update: function (dt) {
+    if (this.timer > this.starDuration) {
+      this.gameOver();
+      return;
+    }
+    this.timer += dt;
+  },
 
-  start() {}
+  gainScore: function () {
+    this.score++;
+    this.scoreDisplay.string = `Score: ${this.score}`;
+  },
 
-  // update (dt) {},
+  gameOver: function () {
+    this.player.stopAllActions();
+    cc.director.loadScene("game");
+  }
 });
